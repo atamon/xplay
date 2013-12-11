@@ -5,7 +5,7 @@ import player
 from matcher import Matcher
 
 
-def matchCommand(string):
+def matchCommand(string, options):
     # Handle keywords (play, pause, stop, jumpto)
     keywordMap = {
         'play': player.play,
@@ -18,8 +18,7 @@ def matchCommand(string):
 
     # Catch keywords
     if (command):
-        print(command)
-        command()
+        command(options=options)
     else:
         # Default to finding files through the Matcher class
         m = Matcher(string, options)
@@ -30,4 +29,4 @@ def matchCommand(string):
 optionsString = open('config.json')
 options = json.load(optionsString)
 
-matchCommand(sys.argv[1])
+matchCommand(sys.argv[1], options)

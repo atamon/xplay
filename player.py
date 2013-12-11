@@ -23,22 +23,36 @@ def playFile(file, options):
         print('Playing file {0}'.format(file['label']))
 
 
-def play():
+def play(options):
     print('MockPlay')
 
 
-def pause():
+def pause(options):
     print('MockPause')
 
 
-def stop():
-    print('MockStop')
+def stop(options):
+    payload = {
+        'method': 'Player.Stop',
+        'params': {
+            'playerid': 1
+        }
+    }
+
+    payload.update(options['payloadDefaults'])
+
+    r = requests.post(options['url'], data=json.dumps(payload))
+    data = r.json()
+
+    if ('error' in data):
+        print('Failed to stop playback, maybe there\'s nothing\'s playing? :)')
+    else:
+        print('Playback stopped')
 
 
-"""Real playPause request to XBMC"""
-def playPause():
+def playPause(options):
     print('MockPlayPause')
 
 
 def jumpTo(hour, minute, second):
-    print('{0}:{1}:{2}'.format(hour, minute, second))
+    print('MockJumping to {0}:{1}:{2}'.format(hour, minute, second))
