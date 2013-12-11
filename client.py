@@ -1,5 +1,7 @@
+import os
 import sys
 import json
+from string import join
 
 import player
 from matcher import Matcher
@@ -26,7 +28,12 @@ def matchCommand(string, options):
 
 
 # Set up configuration from file
-optionsString = open('config.json')
+mydir = os.path.dirname(os.path.realpath(__file__))
+optionsString = open(mydir + '/config.json')
 options = json.load(optionsString)
 
-matchCommand(sys.argv[1], options)
+# Parse command line arguments
+
+argument = join(sys.argv[1::])
+
+matchCommand(argument, options)

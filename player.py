@@ -51,6 +51,7 @@ def stop(options):
 
 
 def playPause(options):
+    """Real playPause request to XBMC"""
     print('MockPlayPause')
 
 

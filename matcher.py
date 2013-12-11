@@ -1,14 +1,27 @@
 import re
 import json
 import requests
+from functools import partial
 
 import player
+
+
+def match(source, subject):
+    for part in source.split(' '):
+        test = re.compile('.*' + part + '.*', re.IGNORECASE)
+
+        if not (test.match(subject)):
+            return False
+
+    return True
 
 
 class Matcher(object):
     def __init__(self, string, options={}):
         self.string = string
         self.options = options
+
+        self.match = partial(match, source=string)
 
     def presentMatches(self, matches):
         nMatches = len(matches)
@@ -46,14 +59,13 @@ class Matcher(object):
         return data['result']['files']
 
     def parseContents(self, contents):
-        tester = re.compile(self.string, re.IGNORECASE)
         directories = []
         matches = []
 
         for file in contents:
             if (file['filetype'] == 'directory'):
                 directories.append(file)
-            elif(tester.match(file['label'])):
+            elif(self.match(subject=file['label'])):
                 matches.append(file)
 
         return {
