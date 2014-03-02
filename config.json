@@ -1,0 +1,8 @@
+{
+    "url": "http://192.168.1.2/jsonrpc",
+    "rootDirectory": "/media/abbd7fc1-32ba-4c17-9cbf-f84bd7c8f26f/Downloads",
+    "payloadDefaults": {
+        "id": 1,
+        "jsonrpc": "2.0"
+    }
+}

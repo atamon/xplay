@@ -24,11 +24,43 @@ def playFile(file, options):
 
 
 def play(options):
-    print('MockPlay')
+    payload = {
+        'method': 'Player.playPause',
+        'params': {
+            'playerid': 1,
+            'play': True
+        }
+    }
+
+    payload.update(options['payloadDefaults'])
+
+    r = requests.post(options['url'], data=json.dumps(payload))
+    data = r.json()
+
+    if ('error' in data or not 'result' in data):
+        raise Exception(data)
+    else:
+        print('Playback resumed')
 
 
 def pause(options):
-    print('MockPause')
+    payload = {
+        'method': 'Player.playPause',
+        'params': {
+            'playerid': 1,
+            'play': False
+        }
+    }
+
+    payload.update(options['payloadDefaults'])
+
+    r = requests.post(options['url'], data=json.dumps(payload))
+    data = r.json()
+
+    if ('error' in data or not 'result' in data):
+        raise Exception(data)
+    else:
+        print('Playback paused')
 
 
 def stop(options):

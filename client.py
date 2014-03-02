@@ -4,6 +4,7 @@ import json
 from string import join
 
 import player
+import system
 from matcher import Matcher
 
 
@@ -13,7 +14,8 @@ def matchCommand(string, options):
         'play': player.play,
         'pause': player.pause,
         'stop': player.stop,
-        'jumpto': player.jumpTo
+        'jumpto': player.jumpTo,
+        'reboot': system.reboot,
     }
 
     command = keywordMap.get(string)
