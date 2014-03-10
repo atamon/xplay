@@ -70,7 +70,8 @@ class Matcher(object):
             response.futures.append(future)
 
         response.matches = contents['files']
-        self.log(".")
+        nMatches = len(response.matches)
+        self.log(" {0} ".format(nMatches) if nMatches > 0 else ".")
 
     def parseContents(self, contents):
         directories = []
