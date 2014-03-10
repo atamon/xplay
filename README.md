@@ -1,16 +1,17 @@
-# xbmcplay.py
+# xplay.py
+Sick and tired of waiting for your PI to render your XBMC filelist?
 
 ## Usage
+Set config in config.json
+```
 ./xplay.bash "Search string"
 ./xplay.bash stop
-
-### Coming
 ./xplay.bash play
 ./xplay.bash pause
-./xplay.bash jumpto
+```
 
-### Note
-xplay.bash is just a proxy for "python client.py"
+### Coming
+./xplay.bash jumpto
 
 ## Testing
 Run python -m unittest discover -s tests/
