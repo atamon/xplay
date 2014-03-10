@@ -1,9 +1,8 @@
 import re
 import json
-import requests
+from sys import stdout
+from requests_futures.sessions import FuturesSession
 from functools import partial
-
-import player
 
 
 def match(source, subject):
@@ -22,6 +21,8 @@ class Matcher(object):
         self.options = options
 
         self.match = partial(match, source=string)
+
+        self.session = FuturesSession(max_workers=10)
 
     def presentMatches(self, matches):
         nMatches = len(matches)
@@ -49,48 +50,63 @@ class Matcher(object):
 
         url = self.options['url']
 
-        r2 = requests.post(url, data=json.dumps(payload))
+        return self.session.post(
+            url,
+            data=json.dumps(payload),
+            background_callback=self.handleDirectoryResult)
 
-        data = r2.json()
+    def handleDirectoryResult(self, session, response):
+        data = response.json()
 
         if ('error' in data or not 'result' in data):
             raise Exception(data)
 
-        return data['result']['files']
+        files = data['result']['files']
+        contents = self.parseContents(files)
+
+        response.futures = []
+        for d in contents['directories']:
+            future = self.fetchDirectory(d['file'])
+            response.futures.append(future)
+
+        response.matches = contents['files']
+        self.log(".")
 
     def parseContents(self, contents):
         directories = []
         matches = []
 
-        for file in contents:
-            if (file['filetype'] == 'directory'):
-                directories.append(file)
-            elif(self.match(subject=file['label'])):
-                matches.append(file)
+        if contents is not None:
+            for file in contents:
+                if (file['filetype'] == 'directory'):
+                    directories.append(file)
+                elif(self.match(subject=file['label'])):
+                    matches.append(file)
 
         return {
             'files': matches,
             'directories': directories
         }
 
+    def gatherMatches(self, future):
+        matches = []
+        response = future.result()
+        for sf in response.futures:
+            matches.extend(self.gatherMatches(sf))
+
+        matches.extend(response.matches)
+        return matches
+
+    def log(self, msg, linebreak=False):
+        stdout.write(msg)
+        if linebreak:
+            stdout.write('\n')
+        stdout.flush()
+
     def matchVideo(self):
-        print('Matching "{0}"'.format(self.string))
+        self.log('Matching "{0}" '.format(self.string))
 
-        contents = self.fetchDirectory(self.options['rootDirectory'])
-        pContents = self.parseContents(contents)
-        matches = pContents['files']
-
-        selectedFile = self.presentMatches(matches)
-
-        if not (selectedFile):
-            for directory in pContents['directories']:
-                dirContents = self.fetchDirectory(directory['file'])
-                if (dirContents):
-                    pDirContents = self.parseContents(dirContents)
-                    selectedFile = self.presentMatches(pDirContents['files'])
-
-                    if (selectedFile):
-                        player.playFile(selectedFile, self.options)
-                        break
-        else:
-            player.playFile(selectedFile, self.options)
+        future = self.fetchDirectory(self.options['rootDirectory'])
+        matches = self.gatherMatches(future)
+        self.log("", True)
+        self.presentMatches(matches)
