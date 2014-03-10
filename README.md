@@ -1,17 +1,24 @@
 # xplay.py
 Sick and tired of waiting for your PI to render your XBMC filelist?
 
+## Dependencies
+```
+pip install requests-futures
+```
+
 ## Usage
 Set config in config.json
 ```
-./xplay.bash "Search string"
-./xplay.bash stop
-./xplay.bash play
-./xplay.bash pause
+./client.py "Search string"
+./client.py stop
+./client.py play
+./client.py pause
 ```
 
 ### Coming
-./xplay.bash jumpto
+```
+./client.py jumpto
+```
 
 ## Testing
 Run python -m unittest discover -s tests/
